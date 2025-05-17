@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 6</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 6</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (151-180) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è l’ormone melanocito-stimolante (MSH)?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’ormone melanocito-stimolante (MSH) è un ormone prodotto dall’ipofisi anteriore che stimola i melanociti a produrre melanina, influenzando la pigmentazione della pelle. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per comprendere condizioni come l’iperpigmentazione cutanea nel morbo di Addison, monitorando i cambiamenti della pelle e segnalandoli."
+            },
+            {
+                question: "Dove viene prodotto l’MSH?",
+                options: ["Nella tiroide", "Nell’ipofisi", "Nel pancreas"],
+                correct: "Nell’ipofisi",
+                explanation: "L’MSH è prodotto dall’ipofisi anteriore, in particolare dalle cellule intermedie, sotto il controllo dell’ipotalamo. La tiroide e il pancreas non sono coinvolti. Gli OSS devono sapere dove viene prodotto per collegare i sintomi di iperpigmentazione a disfunzioni ipofisarie o surrenaliche e supportare i pazienti."
+            },
+            {
+                question: "Quale funzione ha l’MSH?",
+                options: ["Regola il metabolismo degli zuccheri", "Stimola la produzione di melanina", "Regola l’equilibrio idro-salino"],
+                correct: "Stimola la produzione di melanina",
+                explanation: "L’MSH stimola i melanociti a produrre melanina, il pigmento responsabile del colore della pelle, dei capelli e degli occhi. Non regola gli zuccheri né l’equilibrio idro-salino. Gli OSS devono osservare i cambiamenti di pigmentazione nei pazienti, come macchie scure, e segnalarli per una valutazione medica."
+            },
+            {
+                question: "Cos’è l’ipotalamo?",
+                options: ["Una ghiandola che produce insulina", "Una regione cerebrale che regola le funzioni endocrine", "Un organo digestivo"],
+                correct: "Una regione cerebrale che regola le funzioni endocrine",
+                explanation: "L’ipotalamo è una regione del cervello che regola le funzioni endocrine producendo ormoni rilascianti e inibitori che controllano l’ipofisi, influenzando il metabolismo, la temperatura corporea e altre funzioni. Non produce insulina né è un organo digestivo. Gli OSS devono conoscere il suo ruolo per comprendere le disfunzioni endocrine e monitorare i pazienti."
+            },
+            {
+                question: "Quale funzione ha l’ipotalamo?",
+                options: ["Regola le funzioni endocrine e omeostatiche", "Produce anticorpi", "Facilita la digestione"],
+                correct: "Regola le funzioni endocrine e omeostatiche",
+                explanation: "L’ipotalamo regola funzioni endocrine (es. produzione di ormoni ipofisari) e omeostatiche (es. temperatura corporea, sete, fame) attraverso segnali nervosi e ormonali. Non produce anticorpi né facilita la digestione. Gli OSS devono monitorare i segni di disfunzione ipotalamica, come alterazioni della temperatura, e segnalarli."
+            },
+            {
+                question: "Cos’è il sistema endocrino?",
+                options: ["Un sistema di ghiandole che producono ormoni", "Un sistema di organi digestivi", "Un sistema di nervi motori"],
+                correct: "Un sistema di ghiandole che producono ormoni",
+                explanation: "Il sistema endocrino è composto da ghiandole (es. ipofisi, tiroide, surrenali) che producono ormoni rilasciati nel sangue per regolare funzioni come metabolismo, crescita e riproduzione. Non è coinvolto nella digestione né nei nervi motori. Gli OSS devono conoscere il sistema endocrino per assistere pazienti con patologie endocrine, come il diabete."
+            },
+            {
+                question: "Quale funzione ha il sistema endocrino?",
+                options: ["Regola le funzioni corporee attraverso ormoni", "Trasmette segnali nervosi", "Produce enzimi digestivi"],
+                correct: "Regola le funzioni corporee attraverso ormoni",
+                explanation: "Il sistema endocrino regola funzioni corporee (es. metabolismo, crescita, risposta allo stress) attraverso ormoni che agiscono come messaggeri chimici. Non trasmette segnali nervosi (sistema nervoso) né produce enzimi digestivi (sistema digerente). Gli OSS devono monitorare i sintomi di squilibrio ormonale e collaborare con l’équipe medica."
+            },
+            {
+                question: "Cos’è un ormone?",
+                options: ["Una proteina digestiva", "Un messaggero chimico", "Un tipo di anticorpo"],
+                correct: "Un messaggero chimico",
+                explanation: "Un ormone è un messaggero chimico prodotto dalle ghiandole endocrine, trasportato dal sangue per regolare funzioni specifiche in organi bersaglio. Non è una proteina digestiva né un anticorpo. Gli OSS devono comprendere il concetto di ormone per gestire pazienti con disfunzioni endocrine, come il diabete o l’ipertiroidismo."
+            },
+            {
+                question: "Quale ghiandola è considerata la ‘direttrice’ del sistema endocrino?",
+                options: ["Tiroide", "Ipofisi", "Pancreas"],
+                correct: "Ipofisi",
+                explanation: "L’ipofisi, chiamata ‘ghiandola direttrice’, regola altre ghiandole endocrine (es. tiroide, surrenali, gonadi) attraverso ormoni come ACTH, TSH e FSH. La tiroide e il pancreas hanno ruoli specifici, ma non controllano altre ghiandole. Gli OSS devono conoscere il ruolo centrale dell’ipofisi per comprendere le patologie endocrine sistemiche."
+            },
+            {
+                question: "Quale ormone è prodotto dall’ipotalamo?",
+                options: ["Insulina", "Ormone rilasciante la corticotropina (CRH)", "Testosterone"],
+                correct: "Ormone rilasciante la corticotropina (CRH)",
+                explanation: "L’ipotalamo produce l’ormone rilasciante la corticotropina (CRH), che stimola l’ipofisi a rilasciare ACTH. L’insulina è prodotta dal pancreas, e il testosterone dai testicoli. Gli OSS devono sapere quali ormoni produce l’ipotalamo per comprendere il controllo delle funzioni endocrine e monitorare i pazienti."
+            },
+            {
+                question: "Cos’è il CRH?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il CRH (ormone rilasciante la corticotropina) è un ormone prodotto dall’ipotalamo che stimola l’ipofisi a rilasciare ACTH, regolando la produzione di cortisolo. Non è un enzima né un anticorpo. Gli OSS devono conoscere il CRH per comprendere le disfunzioni surrenaliche e monitorare i sintomi correlati."
+            },
+            {
+                question: "Quale funzione ha il CRH?",
+                options: ["Stimola la produzione di ACTH", "Regola il metabolismo del calcio", "Facilita l’assorbimento del glucosio"],
+                correct: "Stimola la produzione di ACTH",
+                explanation: "Il CRH stimola l’ipofisi anteriore a produrre ACTH, che a sua volta attiva le surrenali per il rilascio di cortisolo. Non regola il calcio né il glucosio. Gli OSS devono osservare i segni di squilibrio cortisolemico, come ipertensione o stanchezza, e segnalarli."
+            },
+            {
+                question: "Cos’è il GHRH?",
+                options: ["Un ormone", "Un enzima", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il GHRH (ormone rilasciante l’ormone della crescita) è un ormone prodotto dall’ipotalamo che stimola l’ipofisi a rilasciare l’ormone della crescita (GH). Non è un enzima né un anticorpo. Gli OSS devono conoscere il GHRH per comprendere disturbi come l’acromegalia o il nanismo ipofisario."
+            },
+            {
+                question: "Dove viene prodotto il GHRH?",
+                options: ["Nell’ipofisi", "Nell’ipotalamo", "Nella tiroide"],
+                correct: "Nell’ipotalamo",
+                explanation: "Il GHRH è prodotto dall’ipotalamo e agisce sull’ipofisi per stimolare la produzione di GH. La tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotto per collegare i sintomi di squilibrio della crescita a disfunzioni ipotalamiche."
+            },
+            {
+                question: "Quale funzione ha il GHRH?",
+                options: ["Regola l’equilibrio idro-salino", "Stimola la produzione di ormone della crescita", "Facilita la digestione"],
+                correct: "Stimola la produzione di ormone della crescita",
+                explanation: "Il GHRH stimola l’ipofisi a rilasciare l’ormone della crescita, che regola la crescita e il metabolismo cellulare. Non regola l’equilibrio idro-salino né la digestione. Gli OSS devono monitorare i segni di squilibrio del GH, come ingrossamento delle estremità, e segnalarli."
+            },
+            {
+                question: "Cos’è il TRH?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il TRH (ormone rilasciante la tireotropina) è un ormone prodotto dall’ipotalamo che stimola l’ipofisi a rilasciare TSH, regolando la funzione tiroidea. Non è un enzima né un anticorpo. Gli OSS devono conoscere il TRH per comprendere le disfunzioni tiroidee e supportare i pazienti."
+            },
+            {
+                question: "Dove viene prodotto il TRH?",
+                options: ["Nella tiroide", "Nell’ipotalamo", "Nel pancreas"],
+                correct: "Nell’ipotalamo",
+                explanation: "Il TRH è prodotto dall’ipotalamo e agisce sull’ipofisi per stimolare la produzione di TSH. La tiroide è il bersaglio, e il pancreas non è coinvolto. Gli OSS devono sapere dove viene prodotto per collegare i sintomi tiroidei a disfunzioni ipotalamiche."
+            },
+            {
+                question: "Quale funzione ha il TRH?",
+                options: ["Stimola la produzione di TSH", "Regola il metabolismo del calcio", "Facilita l’assorbimento del glucosio"],
+                correct: "Stimola la produzione di TSH",
+                explanation: "Il TRH stimola l’ipofisi a rilasciare TSH, che a sua volta attiva la tiroide per produrre ormoni tiroidei. Non regola il calcio né il glucosio. Gli OSS devono monitorare i segni di squilibrio tiroideo, come tachicardia o stanchezza, e segnalarli."
+            },
+            {
+                question: "Cos’è il GnRH?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il GnRH (ormone rilasciante le gonadotropine) è un ormone prodotto dall’ipotalamo che stimola l’ipofisi a rilasciare FSH e LH, regolando la funzione delle gonadi. Non è un enzima né un anticorpo. Gli OSS devono conoscere il GnRH per comprendere i disturbi riproduttivi, come l’infertilità."
+            },
+            {
+                question: "Dove viene prodotto il GnRH?",
+                options: ["Nelle gonadi", "Nell’ipotalamo", "Nella tiroide"],
+                correct: "Nell’ipotalamo",
+                explanation: "Il GnRH è prodotto dall’ipotalamo e agisce sull’ipofisi per stimolare la produzione di FSH e LH. Le gonadi sono il bersaglio, e la tiroide non è coinvolta. Gli OSS devono sapere dove viene prodotto per supportare i pazienti con problemi riproduttivi."
+            },
+            {
+                question: "Quale funzione ha il GnRH?",
+                options: ["Regola il metabolismo degli zuccheri", "Stimola la produzione di FSH e LH", "Regola i livelli di calcio"],
+                correct: "Stimola la produzione di FSH e LH",
+                explanation: "Il GnRH stimola l’ipofisi a rilasciare FSH e LH, che regolano la funzione delle gonadi (ovulazione, spermatogenesi). Non regola gli zuccheri né il calcio. Gli OSS devono monitorare i segni di squilibrio gonadico, come irregolarità mestruali, e segnalarli."
+            },
+            {
+                question: "Cos’è la somatostatina?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La somatostatina è un ormone prodotto dall’ipotalamo, dal pancreas e da altre cellule, che inibisce il rilascio di vari ormoni, come GH, TSH e insulina. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per comprendere le regolazioni endocrine e monitorare i pazienti."
+            },
+            {
+                question: "Dove viene prodotta la somatostatina?",
+                options: ["Solo nell’ipofisi", "Nell’ipotalamo e nel pancreas", "Nella tiroide"],
+                correct: "Nell’ipotalamo e nel pancreas",
+                explanation: "La somatostatina è prodotta dall’ipotalamo, dalle cellule delta del pancreas e da altre cellule del tratto gastrointestinale. Non è prodotta dall’ipofisi né dalla tiroide. Gli OSS devono sapere dove viene prodotta per comprendere il controllo ormonale e le disfunzioni associate."
+            },
+            {
+                question: "Quale funzione ha la somatostatina?",
+                options: ["Inibisce il rilascio di vari ormoni", "Stimola la produzione di insulina", "Regola la pressione arteriosa"],
+                correct: "Inibisce il rilascio di vari ormoni",
+                explanation: "La somatostatina inibisce il rilascio di ormoni come GH, TSH, insulina e glucagone, regolando vari processi endocrini e digestivi. Non stimola l’insulina né regola la pressione. Gli OSS devono monitorare i pazienti con squilibri ormonali e collaborare con l’équipe medica."
+            },
+            {
+                question: "Cos’è la dopamina?",
+                options: ["Un enzima", "Un neurotrasmettitore e ormone", "Un anticorpo"],
+                correct: "Un neurotrasmettitore e ormone",
+                explanation: "La dopamina è un neurotrasmettitore nel sistema nervoso centrale e un ormone prodotto dall’ipotalamo, che inibisce il rilascio di prolattina dall’ipofisi. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per comprendere condizioni come l’iperprolattinemia e supportare i pazienti."
+            },
+            {
+                question: "Dove viene prodotta la dopamina?",
+                options: ["Nella tiroide", "Nell’ipotalamo", "Nel pancreas"],
+                correct: "Nell’ipotalamo",
+                explanation: "La dopamina, come ormone, è prodotta dall’ipotalamo, dove agisce come inibitore della prolattina. È anche sintetizzata in altre aree cerebrali come neurotrasmettitore. La tiroide e il pancreas non sono coinvolti. Gli OSS devono sapere dove viene prodotta per comprendere i disturbi legati alla prolattina."
+            },
+            {
+                question: "Quale funzione ha la dopamina?",
+                options: ["Stimola la produzione di prolattina", "Inibisce il rilascio di prolattina", "Regola il metabolismo del calcio"],
+                correct: "Inibisce il rilascio di prolattina",
+                explanation: "La dopamina inibisce il rilascio di prolattina dall’ipofisi, regolando la produzione di latte e altre funzioni endocrine. Non stimola la prolattina né regola il calcio. Gli OSS devono monitorare i segni di iperprolattinemia, come galattorrea, e segnalarli."
+            },
+            {
+                question: "Cos’è il sistema nervoso simpatico?",
+                options: ["Un sistema che regola le funzioni digestive", "Un sistema che attiva la risposta di lotta o fuga", "Un sistema che produce ormoni"],
+                correct: "Un sistema che attiva la risposta di lotta o fuga",
+                explanation: "Il sistema nervoso simpatico, parte del sistema nervoso autonomo, attiva la risposta di ‘lotta o fuga’ in situazioni di stress, aumentando frequenza cardiaca, pressione arteriosa e glicemia. Non regola direttamente la digestione né produce ormoni. Gli OSS devono riconoscere i segni di attivazione simpatica, come tachicardia, e monitorare i pazienti in condizioni di stress."
+            },
+            {
+                question: "Cos’è il sistema nervoso parasimpatico?",
+                options: ["Un sistema che attiva la risposta di lotta o fuga", "Un sistema che promuove il riposo e la digestione", "Un sistema che regola la crescita"],
+                correct: "Un sistema che promuove il riposo e la digestione",
+                explanation: "Il sistema nervoso parasimpatico, parte del sistema nervoso autonomo, promuove il riposo, la digestione e il recupero energetico, riducendo la frequenza cardiaca e stimolando la motilità intestinale. Non attiva la risposta di lotta o fuga né regola la crescita. Gli OSS devono monitorare i segni di attività parasimpatica, come bradicardia, nei pazienti a riposo."
+            },
+            {
+                question: "Quale funzione ha il sistema nervoso autonomo?",
+                options: ["Regola le funzioni involontarie del corpo", "Controlla i movimenti volontari", "Produce anticorpi"],
+                correct: "Regola le funzioni involontarie del corpo",
+                explanation: "Il sistema nervoso autonomo (simpatico e parasimpatico) regola funzioni involontarie, come battito cardiaco, respirazione, digestione e pressione arteriosa. Non controlla i movimenti volontari (sistema nervoso somatico) né produce anticorpi. Gli OSS devono monitorare i parametri vitali influenzati dal sistema autonomo, come la frequenza cardiaca, e segnalare anomalie."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
